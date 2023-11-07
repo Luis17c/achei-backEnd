@@ -1,0 +1,37 @@
+version: "3.7"
+
+services:
+
+  app:
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5161
+    volumes:
+      - "${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets/:ro"
+    build: .
+    container_name: "app"
+    ports:
+      - "5161:5161"
+    command: "dotnet run"
+    depends_on:
+      - postgres
+    links:
+      - postgres
+    networks:
+      - achei-backEnd
+
+  postgres:
+    image: postgres:latest
+    container_name: "postgres"
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+    ports:
+      - "5432:5432"
+    networks:
+      - achei-backEnd
+
+networks:
+  achei-backEnd:
+    driver: bridge
