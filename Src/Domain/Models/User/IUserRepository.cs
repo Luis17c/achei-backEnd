@@ -1,15 +1,7 @@
 using Models;
 
 namespace Interfaces {
-    public interface IUserRepository {
-        User Add(User user);
-        List<User> GetAll();
-
+    public interface IUserRepository : BaseRepository<User>{
         User? GetByEmail(string email);
-
-        User? GetById(int id);
-        
-        bool Edit(User user);
     }
-    
 }
