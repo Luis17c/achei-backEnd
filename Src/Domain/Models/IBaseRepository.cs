@@ -1,5 +1,5 @@
 namespace Interfaces {
-    public interface BaseRepository<T> {
+    public interface IBaseRepository<T> {
         T Add (T entity);
         List<T> GetAll();
         T? GetById(int id);

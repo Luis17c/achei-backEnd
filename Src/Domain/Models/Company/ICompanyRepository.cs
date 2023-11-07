@@ -1,7 +1,7 @@
 using Models;
 
 namespace Interfaces {
-    public interface ICompanyRepository : BaseRepository<Company> {
-        
+    public interface ICompanyRepository : IBaseRepository<Company> {
+
     }
 }

@@ -3,6 +3,8 @@ using Models;
 
 public class DbConnection : DbContext {
     public DbSet<User> Users { get; set; }
+    public DbSet<Address> Addresses { get; set; }
+    public DbSet<Company> Companies { get; set; }
     public string server = Environment.GetEnvironmentVariable("IS_DOCKER") != null ? "postgres" : "localhost"; 
 
     public override int SaveChanges() {

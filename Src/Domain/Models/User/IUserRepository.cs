@@ -1,7 +1,7 @@
 using Models;
 
 namespace Interfaces {
-    public interface IUserRepository : BaseRepository<User>{
+    public interface IUserRepository : IBaseRepository<User>{
         User? GetByEmail(string email);
     }
 }

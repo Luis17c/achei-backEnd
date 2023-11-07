@@ -1,6 +1,6 @@
 using Models;
 
 namespace Interfaces {
-    public interface IAddressRepository : BaseRepository<Address> {
+    public interface IAddressRepository : IBaseRepository<Address> {
     }
 }
