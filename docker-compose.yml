@@ -19,6 +19,9 @@ services:
       - postgres
     networks:
       - achei-backEnd
+    develop:
+      watch:
+        - action: sync
 
   postgres:
     image: postgres:latest

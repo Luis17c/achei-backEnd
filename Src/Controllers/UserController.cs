@@ -4,16 +4,22 @@ using Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models;
+using Utils;
+using Utils.Validators;
 
-namespace loginExercise.Controllers;
+namespace Controllers;
 
 [ApiController]
 [Route("api/user")]
 public class UserController : ControllerBase {
     private readonly IUserRepository _userRepository;
+    private readonly IAddressRepository _addressRepository;
     private readonly IStorage _storage;
-    public UserController (IUserRepository userRepository, IStorage storage) {
+    private readonly CreateAddressValidator _createAddressValidator = new ();
+    
+    public UserController (IUserRepository userRepository, IAddressRepository addressRepository, IStorage storage) {
         _userRepository = userRepository;
+        _addressRepository = addressRepository;
         _storage = storage;
     }
 
@@ -45,5 +51,27 @@ public class UserController : ControllerBase {
         PhotoUrl response = new (_storage.getUrl(user.photo));
 
         return Ok(response);
+    }
+
+    [HttpPost]
+    [Authorize]
+    [Route("address")]
+    public ActionResult CreateUserAddress (CreateAddressDTO addressData) {
+        
+        var validatorResult = _createAddressValidator.Validate(addressData);
+
+        if(!validatorResult.IsValid) {
+            return BadRequest(validatorResult.Errors.Select(e => e.ErrorMessage));
+        }
+
+        int userId = Token.GetUserId(HttpContext);
+
+        Address address = new(addressData.city, addressData.street, addressData.number, addressData.complement) {
+            userId = userId
+        };
+
+        _addressRepository.Add(address);
+        
+        return Ok(address);
     }
 }

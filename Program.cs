@@ -39,6 +39,8 @@ builder.Services.AddSwaggerGen(x => {
 
 // Dependecy Injection
 builder.Services.AddTransient<Interfaces.IUserRepository, Repositories.UserRepository>();
+builder.Services.AddTransient<Interfaces.IAddressRepository, Repositories.AddressRepository>();
+builder.Services.AddTransient<Interfaces.ICompanyRepository, Repositories.CompanyRepository>();
 builder.Services.AddTransient<Interfaces.ICrypt, Crypt>();
 if (builder.Environment.IsDevelopment()) {
     builder.Services.AddTransient<Interfaces.IStorage, DiskStorage>();

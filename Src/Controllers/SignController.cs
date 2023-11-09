@@ -6,8 +6,9 @@ using Utils;
 using System.Text.Json;
 using Utils.Validators;
 using Errors;
+using System.Reflection.Metadata.Ecma335;
 
-namespace loginExercise.Controllers;
+namespace Controllers;
 
 [ApiController]
 [Route("api")]
@@ -30,18 +31,20 @@ public class SignController : ControllerBase
         var validatorResult = signUpValidator.Validate(newUser);
 
         if (!validatorResult.IsValid) {
-            return BadRequest(validatorResult.Errors.Select(e => e.ErrorMessage).ToList());
+            return BadRequest(validatorResult.Errors.Select(e => e.ErrorMessage));
         }
 
         if (_userRepository.GetByEmail(newUser.email) != null)
             return BadRequest("Email already in use");
 
-        User user = new(newUser.name, newUser.email, newUser.password, null);
+        User ?user = new(newUser.name, newUser.email, newUser.password, null);
 
         user.password = _crypt.encrypt(user.password ?? throw new Exception("Password is required"));
         
         _userRepository.Add(user);
-        user = _userRepository.GetByEmail(user.email) ?? throw new Exception(EntityNotFound.Throw("user"));
+        user = _userRepository.GetByEmail(user.email);
+
+        if (user == null) return NotFound(EntityNotFound.Throw("user"));
 
         SignResponse response = new(user, Token.Generate(user));
         
@@ -54,7 +57,7 @@ public class SignController : ControllerBase
         var validatorResult = signInValidator.Validate(signData);
 
         if (!validatorResult.IsValid) {
-            return BadRequest(validatorResult.Errors.Select(e => e.ErrorMessage).ToList());
+            return BadRequest(validatorResult.Errors.Select(e => e.ErrorMessage));
         }
 
         User? user = _userRepository.GetByEmail(signData.email);

@@ -1,3 +1,3 @@
 public abstract class ActiveBaseEntity : BaseEntity {
-    public bool isActive = true;
+    public bool isActive { get; set; } = true;
 }

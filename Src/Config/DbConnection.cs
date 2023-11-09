@@ -38,4 +38,23 @@ public class DbConnection : DbContext {
             "User ID=postgres;" +
             "Password=admin"
         );
+    protected override void OnModelCreating(ModelBuilder modelBuilder) {
+            modelBuilder.Entity<User>()
+                .HasOne(e => e.address)
+                .WithOne()
+                .HasForeignKey<Address>(a => a.userId)
+                .IsRequired(false);
+
+            modelBuilder.Entity<Address>()
+                .HasOne<Company>()
+                .WithMany(c => c.addresses)
+                .HasForeignKey(a => a.companyId)
+                .IsRequired(false);
+            
+            modelBuilder.Entity<Company>()
+                .HasOne<User>()
+                .WithMany(u => u.companies)
+                .HasForeignKey(c => c.userId)
+                .IsRequired();
+        }
 }

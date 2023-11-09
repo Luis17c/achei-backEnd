@@ -1,4 +1,6 @@
 using Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Models;
 
 namespace Repositories {
@@ -9,7 +11,6 @@ namespace Repositories {
         {
             _context.Companies.Add(company);
             _context.SaveChanges();
-
             return company;
         }
 
@@ -20,18 +21,37 @@ namespace Repositories {
             return true;
         }
 
-        public List<Company> GetAll()
+        public List<Company> GetAll(Func<Company, bool>? query)
         {
-            return _context.Companies.ToList();
+            var companies = _context.Companies
+                .Where(
+                    company => company.isActive == true
+                ).Include(
+                    c => c.addresses
+                );
+            if (query != null) {
+                try {
+                    return companies.Where(query).ToList();
+                } catch (Exception) {
+                    throw new Exception("Invalid query on CompanyRepository.GetAll");
+                }
+            }
+
+            return companies.ToList();
         }
 
         public Company? GetById(int id)
         {
             Company? company;
             try {
-                company = _context.Companies.Where(
-                    company => company.id == id
-                ).First();
+                company = _context.Companies
+                    .Where(
+                        company => company.id == id
+                    ).Where(
+                        c => c.isActive == true
+                    ).Include(
+                        c => c.addresses
+                    ).First();
             } catch (Exception) {
                 company = null;
             };

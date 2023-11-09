@@ -1,4 +1,5 @@
 using Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Models;
 
 namespace Repositories {
@@ -10,17 +11,38 @@ namespace Repositories {
 
             return user;
         }
-        public List<User> GetAll() {
-            return _context.Users.ToList();
+        public List<User> GetAll(Func<User, bool> ?query) {
+            var users = _context.Users
+                .Where(
+                    u => u.isActive == true
+                ).Include(
+                    u => u.address
+                ).Include(
+                    u => u.companies
+                );
+
+            if (query != null) {
+                return users.Where(query).ToList();
+            }
+            
+            return users.ToList();
         }
 
         public User? GetByEmail(string email) {
             User? user;
             try {
-                user = _context.Users.Where(
+                user = _context.Users
+                .Where(
                     user => user.email == email
+                ).Where(
+                    u => u.isActive == true
+                ).Include(
+                    u => u.address
+                ).Include(
+                    u => u.companies
                 ).First();
-            } catch (Exception) {
+            } catch (Exception err) {
+                Console.WriteLine(err);
                 user = null;
             };
 
@@ -30,9 +52,16 @@ namespace Repositories {
         public User? GetById(int id) {
             User? user;
             try {
-                user = _context.Users.Where(
-                    user => user.id == id
-                ).First();
+                user = _context.Users
+                    .Where(
+                        user => user.id == id
+                    ).Where(
+                        u => u.isActive == true
+                    ).Include(
+                        u => u.address
+                    ).Include(
+                        u => u.companies
+                    ).First();
             } catch (Exception) {
                 user = null;
             };

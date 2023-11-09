@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.VisualBasic;
 using Models;
 
 
@@ -24,6 +25,26 @@ namespace Utils {
             var tokenString = tokenHandler.WriteToken(token);
 
             return tokenString;
+        }
+        public static int GetUserId(HttpContext httpContext) {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(tokenSecret);      
+            
+            tokenHandler.ValidateToken(
+                httpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last()
+                , new TokenValidationParameters {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                }, out SecurityToken validatedToken
+            );
+
+            var jwtToken = (JwtSecurityToken)validatedToken;
+
+            int userId = int.Parse(jwtToken.Claims.First(x => x.Type == "userId").Value);
+
+            return userId;
         }
     }
 }

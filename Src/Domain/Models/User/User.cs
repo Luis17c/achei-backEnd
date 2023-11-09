@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 
 namespace Models {
     [Table("users")]
@@ -10,7 +11,7 @@ namespace Models {
         [JsonIgnore]
         public string ?password { get; set; }
         public Address ?address { get; set; }
-        public ICollection<Company> ?companies { get; set; }        
+        public ICollection<Company> ?companies { get; } = new List<Company>();       
         public User(string name, string email, string ?password, string? photo) {
             this.name = name;
             this.email = email;
